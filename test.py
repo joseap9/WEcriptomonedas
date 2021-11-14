@@ -65,6 +65,7 @@ for x in range(len(lista_paginas)):
             for q in volu:
                 if con == 3:
                     volumen = q.find('div', class_='statsValue').get_text()
+                    listaVolumenMonedas.append(volumen)
                 con = con + 1
         con = con + 1
 
@@ -192,8 +193,8 @@ def tabla():
             Thread(target=frameMoneda(valor)).start()
 
     # =======================
-    #marcoTodos = LabelFrame(root, text="Top 10 Criptomonedas", bd=4, width=290, height=318, bg="#EDF0F2")
-    #marcoTodos.pack()
+    # marcoTodos = LabelFrame(popup, text="Pacientes Con Alta Medica", bd=4, width=290, height=318, bg="#EDF0F2")
+    # marcoTodos.place(x=50, y=30)
     # estilo
     style = ttk.Style()
     style.configure('Treeview', background="#C0EAF8", foreground="black", fieldBackground="#C0EAF8")
