@@ -8,13 +8,15 @@ import pandas_datareader as pdr
 from datetime import datetime, timedelta
 import mplfinance as mpf
 from PIL import Image, ImageTk
-from threading import Thread
+import requests as req
+from io import BytesIO
 
 url = 'https://coinmarketcap.com/es/'
 page = requests.get(url)
 cont = page.text
 
 listaMonedas = []
+lista_img = []
 soup = BeautifulSoup(cont, 'lxml')
 
 box = soup.find('html', lang='es')
@@ -44,11 +46,17 @@ for x in range(len(lista_paginas)):
 
     soup2 = BeautifulSoup(cont1, 'lxml')
 
+    imagenes = soup2.find('div', class_='sc-16r8icm-0 gpRPnR nameHeader')
+    imagenes = imagenes.find('img').__getitem__('src')
+    lista_img.append(imagenes)
+
     v = soup2.find('div', class_='sc-16r8icm-0 kjciSH priceSection')
     moneda = soup2.find('small', class_='nameSymbol').get_text()
 
     optencion_valor = v.find('div', class_='sc-16r8icm-0 kjciSH priceTitle')
     valo = optencion_valor.find('div', class_='priceValue')
+
+
     for q in valo:
         valor = q
 
@@ -71,6 +79,7 @@ for x in range(len(lista_paginas)):
     tex2 = soup2.find('h2', class_='sc-1q9q90x-0 jCInrl h1')
     titulo2 = tex2.get_text()
 
+
     # grafico de velas
     # int_date = datetime.now() - timedelta(days=30)
     # info = pdr.get_data_yahoo(moneda + '-USD', start=int_date)
@@ -81,6 +90,8 @@ for x in range(len(lista_paginas)):
     listaMonedas.append(maximo)
     listaMonedas.append(volumen)
     listaMonedas.append(moneda)
+
+
 
 
 def frameMoneda(valor):
@@ -126,11 +137,19 @@ def frameMoneda(valor):
     body = Frame(top, width=1200, height=480, bg="#E5F3F7")
     body.pack()
 
-    img = Image.open(lis_img[valor - 1])
-    img = ImageTk.PhotoImage(img)
-    img_label = Label(top, image=img, bg="white")
-    img_label.Image = img
-    img_label.place(x=20, y=16)
+    #img = Image.open(lis_img[valor - 1])
+    #img = ImageTk.PhotoImage(img)
+    #img_label = Label(top, image=img, bg="white")
+    #img_label.place(x=20, y=16)
+
+    response = req.get(lista_img[valor - 1])
+    # transformacion formato de tkinter
+    image = Image.open(BytesIO(response.content))
+    img = ImageTk.PhotoImage(image)
+
+    # colocacion de la imagen en la interfaz
+    imgColocada = Label(top, image=img)
+    imgColocada.place(x=60, y=60)
 
     if valor - 1 == 0:
         texto_titulo = listaMonedas[0]
@@ -189,7 +208,7 @@ def tabla():
             imagen = item['image']
             abierto = item['open']
 
-            Thread(target=frameMoneda(valor)).start()
+            frameMoneda(valor)
 
     # =======================
     #marcoTodos = LabelFrame(root, text="Top 10 Criptomonedas", bd=4, width=290, height=318, bg="#EDF0F2")
