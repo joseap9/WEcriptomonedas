@@ -1,6 +1,3 @@
-from bs4 import BeautifulSoup
-import requests
-import pandas as pd
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -10,137 +7,22 @@ import mplfinance as mpf
 from PIL import Image, ImageTk
 import requests as req
 from io import BytesIO
-
-url = 'https://coinmarketcap.com/es/'
-page = requests.get(url)
-cont = page.text
-
-listaMonedas = []
-lista_img = []
-soup = BeautifulSoup(cont, 'lxml')
-
-box = soup.find('html', lang='es')
-
-tex = box.find('h1', class_='sc-1q9q90x-0 TyVlS')
-titulo = tex.get_text()
-
-# priemr a moneda
-lista_paginas = ['https://coinmarketcap.com/es/currencies/bitcoin/',
-                 'https://coinmarketcap.com/es/currencies/ethereum/',
-                 'https://coinmarketcap.com/es/currencies/binance-coin/',
-                 'https://coinmarketcap.com/es/currencies/tether/',
-                 'https://coinmarketcap.com/es/currencies/solana/',
-                 'https://coinmarketcap.com/es/currencies/cardano/',
-                 'https://coinmarketcap.com/es/currencies/xrp/',
-                 'https://coinmarketcap.com/es/currencies/polkadot-new/',
-                 'https://coinmarketcap.com/es/currencies/dogecoin/',
-                 'https://coinmarketcap.com/es/currencies/usd-coin/']
-lista_valores = []
-sumador = 1
-for x in range(len(lista_paginas)):
-
-    url = lista_paginas[x]
-
-    page1 = requests.get(url)
-    cont1 = page1.text
-
-    soup2 = BeautifulSoup(cont1, 'lxml')
-
-    imagenes = soup2.find('div', class_='sc-16r8icm-0 gpRPnR nameHeader')
-    imagenes = imagenes.find('img').__getitem__('src')
-    lista_img.append(imagenes)
-
-    v = soup2.find('div', class_='sc-16r8icm-0 kjciSH priceSection')
-    moneda = soup2.find('small', class_='nameSymbol').get_text()
-
-    optencion_valor = v.find('div', class_='sc-16r8icm-0 kjciSH priceTitle')
-    valo = optencion_valor.find('div', class_='priceValue')
-
-
-    for q in valo:
-        valor = q
-
-    minimo = v.find('span', class_='n78udj-5 dBJPYV').get_text()
-    x = soup2.find('div', class_='sc-16r8icm-0 SjVBR')
-    maximo = x.find('span', class_='n78udj-5 dBJPYV').get_text()
-    a = soup2.find('div', class_='sc-16r8icm-0 fggtJu statsSection')
-    con = 0
-
-    # obtencion del volumen capital de la moneda
-
-    for volu in a.findAll('div', class_='statsBlock'):
-        if con == 2:
-            for q in volu:
-                if con == 3:
-                    volumen = q.find('div', class_='statsValue').get_text()
-                con = con + 1
-        con = con + 1
-
-    tex2 = soup2.find('h2', class_='sc-1q9q90x-0 jCInrl h1')
-    titulo2 = tex2.get_text()
-
-
-    # grafico de velas
-    # int_date = datetime.now() - timedelta(days=30)
-    # info = pdr.get_data_yahoo(moneda + '-USD', start=int_date)
-    # mpf.plot(info, type='candle', title='valor '+ titulo2, style='charles')
-    listaMonedas.append(titulo2)
-    listaMonedas.append(valor)
-    listaMonedas.append(minimo)
-    listaMonedas.append(maximo)
-    listaMonedas.append(volumen)
-    listaMonedas.append(moneda)
+from weCriptomonedas import listaMonedas,lista_img,lista_paginas,inversion
 
 
 
-
+#creacion de las funciones para las ventanas
 def frameMoneda(valor):
-    def graficoVela(valor):
-
-        int_date = datetime.now() - timedelta(days=30)
-        if valor - 1 == 0:
-            info = pdr.get_data_yahoo(listaMonedas[5] + '-USD', start=int_date)
-            mpf.plot(info, type='candle', title='Valor ' + listaMonedas[0], style='charles')
-        else:
-            info = pdr.get_data_yahoo(listaMonedas[6 * (valor - 1) + 5] + '-USD', start=int_date)
-            mpf.plot(info, type='candle', title='Valor ' + listaMonedas[6 * (valor - 1)], style='charles')
-
-    def graficoLineas(valor):
-
-        int_date = datetime.now() - timedelta(days=30)
-        if valor - 1 == 0:
-            info = pdr.get_data_yahoo(listaMonedas[5] + '-USD', start=int_date)
-            mpf.plot(info, type='line', title='Valor ' + listaMonedas[0], style='charles')
-        else:
-            info = pdr.get_data_yahoo(listaMonedas[6 * (valor - 1) + 5] + '-USD', start=int_date)
-            mpf.plot(info, type='line', title='Valor ' + listaMonedas[6 * (valor - 1)], style='charles')
-
-    lis_img = ['images_coins/1.png',
-               'images_coins/2.png',
-               'images_coins/3.png',
-               'images_coins/4.png',
-               'images_coins/5.png',
-               'images_coins/6.png',
-               'images_coins/7.png',
-               'images_coins/8.png',
-               'images_coins/9.png',
-               'images_coins/10.png']
-
     top = Toplevel()
     if valor - 1 == 0:
         top.title(listaMonedas[0])
     else:
-        top.title(listaMonedas[6 * (valor - 1)])
-    top.geometry("800x600")
+        top.title(listaMonedas[9 * (valor - 1)])
+    top.geometry("700x550")
     header = Frame(top, width=1200, height=180, bg="white")
     header.pack()
     body = Frame(top, width=1200, height=480, bg="#E5F3F7")
     body.pack()
-
-    #img = Image.open(lis_img[valor - 1])
-    #img = ImageTk.PhotoImage(img)
-    #img_label = Label(top, image=img, bg="white")
-    #img_label.place(x=20, y=16)
 
     response = req.get(lista_img[valor - 1])
     # transformacion formato de tkinter
@@ -154,47 +36,129 @@ def frameMoneda(valor):
     if valor - 1 == 0:
         texto_titulo = listaMonedas[0]
     else:
-        texto_titulo = listaMonedas[6 * (valor - 1)]
+        texto_titulo = listaMonedas[9 * (valor - 1)]
 
     name = Label(top, text=texto_titulo, bg="white", font=("Aharoni", 25, 'bold'))
-    name.place(x=200, y=75)
+    name.place(x=150, y=75)
 
     if valor - 1 == 0:
         value = Label(top, text=listaMonedas[1], bg="white", font=("Aharoni", 25, 'bold'))
-        value.place(x=500, y=75)
-        volumenTitulo = Label(top, text="Volumen capital: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        value.place(x=430, y=75)
+        # momento de nivel de mercado de la moneda
+        nivelT = Label(top, text="Nivel de la moneda: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        nivel = Label(top, text=listaMonedas[7], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        nivelT.place(x=30, y=210)
+        nivel.place(x=400, y=210)
+        # Capitalizacion en el mercado
+        capT = Label(top, text="Capitalizacion en el mercado: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        cap = Label(top, text=listaMonedas[8], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        capT.place(x=30, y=250)
+        cap.place(x=400, y=250)
+        # dominio de la moneda en el mercado
+        dominioMTitulo = Label(top, text="Dominio de mercado: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        dominioM = Label(top, text=listaMonedas[6], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        dominioMTitulo.place(x=30, y=290)
+        dominioM.place(x=400, y=290)
+        # volumen capital
+        volumenTitulo = Label(top, text="Volumen de capital: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
         volumen = Label(top, text=listaMonedas[4], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
-        inverTitulo = Label(top, text="Momento para invertir: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
-        inver = Label(top, text="SI", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
-        inverTitulo.place(x=30, y=240)
-        inver.place(x=310, y=240)
-        volumenTitulo.place(x=30, y=200)
-        volumen.place(x=310, y=200)
+        volumenTitulo.place(x=30, y=330)
+        volumen.place(x=400, y=330)
+        # Momento para invertir
+        dat = False
+        inversionT = Label(top, text="Momento para invertir: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        if inversion(dat) == True:
+            inv = Label(top, text='SI', bg="#84E77D", fg="#0FB404", font=("Aharoni", 18, 'bold'))
+        else:
+            inv = Label(top, text='NO', bg="#E8908C", fg="#C8221B", font=("Aharoni", 18, 'bold'))
 
+        inversionT.place(x=30, y=390)
+        inv.place(x=400, y=390)
     else:
-        value = Label(top, text=listaMonedas[6 * (valor - 1) + 1], bg="white", font=("Aharoni", 25, 'bold'))
-        value.place(x=500, y=75)
-        volumenTitulo = Label(top, text="Volumen capital: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
-        volumen = Label(top, text=listaMonedas[6 * (valor - 1) + 4], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
-        volumenTitulo.place(x=30, y=210)
-        volumen.place(x=310, y=210)
-        inverTitulo = Label(top, text="Momento para invertir: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
-        inver = Label(top, text="SI", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
-        inverTitulo.place(x=30, y=240)
-        inver.place(x=310, y=240)
+        #valor
+        value = Label(top, text=listaMonedas[9 * (valor - 1) + 1], bg="white", font=("Aharoni", 25, 'bold'))
+        value.place(x=440, y=75)
+        # momento de nivel de mercado de la moneda
+        nivelT = Label(top, text="Nivel de la moneda: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        nivel = Label(top, text=listaMonedas[9 * (valor - 1) + 7], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        nivelT.place(x=30, y=210)
+        nivel.place(x=400, y=210)
+        # Capitalizacion en el mercado
+        capT = Label(top, text="Capitalizacion en el mercado: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        cap = Label(top, text=listaMonedas[9 * (valor - 1) + 8], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        capT.place(x=30, y=250)
+        cap.place(x=400, y=250)
+        # dominio de la moneda en el mercado
+        dominioMTitulo = Label(top, text="Dominio de mercado: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        dominioM = Label(top, text=listaMonedas[9 * (valor - 1) + 6], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        dominioMTitulo.place(x=30, y=290)
+        dominioM.place(x=400, y=290)
+        #volumen capital
+        volumenTitulo = Label(top, text="Volumen de capital: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        volumen = Label(top, text=listaMonedas[9 * (valor - 1) + 4], bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        volumenTitulo.place(x=30, y=330)
+        volumen.place(x=400, y=330)
+        # Momento para invertir
+        dato=True
+        inversionT = Label(top, text="Momento para invertir: ", bg="#E5F3F7", font=("Aharoni", 18, 'bold'))
+        if inversion(dato):
+            inv = Label(top, text='SI', bg="#84E77D",fg="#0FB404", font=("Aharoni", 18, 'bold'))
+        else:
+            inv = Label(top, text='NO', bg="#E8908C", fg="#C8221B", font=("Aharoni", 18, 'bold'))
+
+        inversionT.place(x=30, y=390)
+        inv.place(x=400, y=390)
+
 
     gv = Image.open('images_coins/gv-bc.png')
     imgAgregar = ImageTk.PhotoImage(gv)
     gv_ = Button(top, image=imgAgregar, borderwidth=0, bg="#E5F3F7", command=lambda: [graficoVela(valor)])
-    gv_.place(x=50, y=420)
+    gv_.place(x=50, y=460)
 
     gl = Image.open('images_coins/gl-bc.png')
     imgAgregarr = ImageTk.PhotoImage(gl)
     gl_ = Button(top, image=imgAgregarr, borderwidth=0, bg="#E5F3F7", command=lambda: [graficoLineas(valor)])
-    gl_.place(x=150, y=420)
+    gl_.place(x=150, y=460)
     top.mainloop()
+    # funcion de la ventana del grafico de velas
 
+def graficoVela(valor):
 
+    int_date = datetime.now() - timedelta(days=30)
+    if valor - 1 == 0:
+        if listaMonedas[5] == 'SOL' or listaMonedas[5]=='DOL':
+            info = pdr.get_data_yahoo(listaMonedas[5] + '1-USD', start=int_date)
+            mpf.plot(info, type='candle', title='Valor ' + listaMonedas[0], style='charles')
+        else:
+            info = pdr.get_data_yahoo(listaMonedas[5] + '-USD', start=int_date)
+            mpf.plot(info, type='candle', title='Valor ' + listaMonedas[0], style='charles')
+    else:
+        if listaMonedas[9 * (valor - 1) + 5] == 'SOL' or listaMonedas[9 * (valor - 1) + 5]=='DOL':
+            info = pdr.get_data_yahoo(listaMonedas[9 * (valor - 1) + 5] + '1-USD', start=int_date)
+            mpf.plot(info, type='candle', title='Valor ' + listaMonedas[9 * (valor - 1)], style='charles')
+        else:
+            info = pdr.get_data_yahoo(listaMonedas[9 * (valor - 1) + 5] + '-USD', start=int_date)
+            mpf.plot(info, type='candle', title='Valor ' + listaMonedas[9 * (valor - 1)], style='charles')
+
+# funcion de la ventana de lgrafico de lineas
+def graficoLineas(valor):
+    int_date = datetime.now() - timedelta(days=30)
+    if valor - 1 == 0:
+        if listaMonedas[5] == 'SOL' or listaMonedas[5] == 'DOL':
+            info = pdr.get_data_yahoo(listaMonedas[5] + '1-USD', start=int_date)
+            mpf.plot(info, type='line', title='Valor ' + listaMonedas[0], style='charles')
+        else:
+            info = pdr.get_data_yahoo(listaMonedas[5] + '-USD', start=int_date)
+            mpf.plot(info, type='line', title='Valor ' + listaMonedas[0], style='charles')
+    else:
+        if listaMonedas[9 * (valor - 1) + 5] == 'SOL' or listaMonedas[9 * (valor - 1) + 5] == 'DOL':
+            info = pdr.get_data_yahoo(listaMonedas[9 * (valor - 1) + 5] + '1-USD', start=int_date)
+            mpf.plot(info, type='line', title='Valor ' + listaMonedas[9 * (valor - 1)], style='charles')
+        else:
+            info = pdr.get_data_yahoo(listaMonedas[9 * (valor - 1) + 5] + '-USD', start=int_date)
+            mpf.plot(info, type='line', title='Valor ' + listaMonedas[9 * (valor - 1)], style='charles')
+
+#creacion de la tabla principal del programa
 def tabla():
     def item_selected(e):
 
@@ -211,13 +175,12 @@ def tabla():
             frameMoneda(valor)
 
     # =======================
-    #marcoTodos = LabelFrame(root, text="Top 10 Criptomonedas", bd=4, width=290, height=318, bg="#EDF0F2")
-    #marcoTodos.pack()
     # estilo
     style = ttk.Style()
     style.configure('Treeview', background="#C0EAF8", foreground="black", fieldBackground="#C0EAF8")
     style.theme_use("default")
     style.map('Treeview', background=[('selected', '#DCA44C')])
+
     # creacion de tabla
     tablaTodos = ttk.Treeview(root, columns=(0, 1, 2, 3, 4), show='headings', height=13)
     tablaTodos.pack()
@@ -235,20 +198,19 @@ def tabla():
     tablaTodos.column(4, width=120)
 
     # agregando elementos
-
     for x in range(len(lista_paginas)):
         if x == 0:
             tablaTodos.insert(parent='', index=x + 1, iid=x + 1,
                               values=(x + 1, listaMonedas[0], listaMonedas[1], listaMonedas[2], listaMonedas[3]),
-                              tags=('evenrow'))
+                              tags=('addrow'))
         else:
             if x % 2 == 0:
                 ever_add = 'addrow'
             else:
                 ever_add = 'evenrow'
             tablaTodos.insert(parent='', index=x + 1, iid=x + 1,
-                              values=(x + 1, listaMonedas[6 * x], listaMonedas[6 * x + 1], listaMonedas[6 * x + 2],
-                                      listaMonedas[6 * x + 3]),
+                              values=(x + 1, listaMonedas[9 * x], listaMonedas[9 * x + 1], listaMonedas[9 * x + 2],
+                                      listaMonedas[9 * x + 3]),
                               tags=(ever_add))
 
     tablaTodos.bind('<Double-1>', item_selected)
